@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Do They Really Believe? — Perception Gap Assessment</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=PT+Sans+Narrow:wght@400;700&display=swap');
+
+  :root {
+    /* All color pairs verified ≥ 4.5:1 contrast on their backgrounds */
+    --cdi-purple: #5158FF;      /* 5.01:1 on white */
+    --cdi-purple-light: #E8E9FF;
+    --cdi-purple-dark: #3a40cc; /* 7.54:1 on white */
+    --text: #333;               /* 12.2:1 on white */
+    --text-light: #595959;      /* 7.0:1 on white */
+    --bg: #FAFBFF;
+    --card-bg: #fff;
+    --border: #D0D3E0;
+    --focus-ring: #1A1AFF;
+    --dem-blue: #2E6DB4;        /* 5.3:1 on white */
+    --dem-blue-light: #E3EDF8;
+    --rep-red: #C0392B;         /* 5.4:1 on white */
+    --rep-red-light: #FDECEA;
+    --green-light: #E6F4EA;
+    --green-text: #1B5E20;      /* 6.9:1 on #E6F4EA */
+    --yellow-light: #FFF8E1;
+    --yellow-text: #5D4000;     /* 7.8:1 on #FFF8E1 */
+    --red-light: #FDE8E8;
+    --red-text: #8B1A10;        /* 7.9:1 on #FDE8E8 */
+  }
+
+  /* ===== REDUCED MOTION ===== */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 1rem; line-height: 1.6; color: var(--text); background: var(--bg);
+  }
+
+  /* ===== SKIP LINK ===== */
+  .skip-link {
+    position: absolute; left: -9999px; top: auto;
+    width: 1px; height: 1px; overflow: hidden;
+    background: var(--cdi-purple); color: white;
+    padding: 12px 24px; font-weight: 600; z-index: 1000;
+    text-decoration: none; border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus {
+    position: fixed; left: 0; top: 0;
+    width: auto; height: auto;
+  }
+
+  /* ===== SR-ONLY UTILITY ===== */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ===== FOCUS STYLES ===== */
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) { outline: none; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ===== TYPOGRAPHY ===== */
+  h1 {
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 2em; font-weight: 700; color: var(--cdi-purple);
+    margin-bottom: 0.375rem; line-height: 1.2;
+  }
+  h2 {
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 1.5em; font-weight: 700; color: var(--cdi-purple);
+    margin: 2rem 0 0.75rem;
+  }
+  p { margin-bottom: 1rem; }
+  .subtitle { font-size: 1.05em; color: var(--text-light); margin-bottom: 1.5rem; }
+  .brand {
+    font-size: 0.8125rem; color: var(--text-light); font-style: italic;
+    margin-bottom: 1.25rem; letter-spacing: 0.5px;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-region { margin-bottom: 2rem; }
+  .progress-label {
+    font-size: 0.8125rem; color: var(--text-light); margin-bottom: 0.5rem;
+    display: flex; justify-content: space-between;
+  }
+  .progress-track {
+    width: 100%; height: 6px; background: var(--border);
+    border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--cdi-purple);
+    border-radius: 3px; transition: width 0.5s ease; width: 0%;
+  }
+
+  /* ===== QUESTION CARD ===== */
+  .question-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 2rem; margin-bottom: 1.25rem;
+    box-shadow: 0 2px 12px rgba(81,88,255,0.06);
+  }
+
+  .party-badge {
+    display: inline-block; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 0.25rem 0.875rem; border-radius: 20px; color: white;
+    margin-bottom: 0.875rem;
+  }
+  .party-badge.dem { background: var(--dem-blue); }
+  .party-badge.rep { background: var(--rep-red); }
+
+  .question-text {
+    font-size: 1.0625rem; font-weight: 500; line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ===== SLIDER ===== */
+  .slider-group { margin-bottom: 0.5rem; }
+  .slider-output {
+    text-align: center; font-size: 2.2em; font-weight: 700;
+    color: var(--cdi-purple); margin-bottom: 0.5rem;
+  }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.75rem; color: var(--text-light); margin-bottom: 0.25rem;
+  }
+
+  input[type="range"] {
+    width: 100%; appearance: none; height: 10px;
+    border-radius: 5px; background: var(--border);
+    cursor: pointer;
+  }
+  input[type="range"]:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 6px;
+    border-radius: 5px;
+  }
+  input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 2px 8px rgba(81,88,255,0.35);
+  }
+  input[type="range"]:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 4px var(--focus-ring), 0 2px 8px rgba(81,88,255,0.35);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--cdi-purple); cursor: pointer;
+    box-shadow: 0 2px 8px rgba(81,88,255,0.35);
+    border: 2px solid white;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cdi-purple); cursor: pointer;
+    box-shadow: 0 2px 8px rgba(81,88,255,0.35);
+    border: 2px solid white;
+  }
+  input[type="range"]:disabled { cursor: default; opacity: 0.5; }
+  input[type="range"]:disabled::-webkit-slider-thumb { cursor: default; }
+  input[type="range"]:disabled::-moz-range-thumb { cursor: default; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border-radius: 8px; font-size: 0.9375rem;
+    font-weight: 600; cursor: pointer; border: none;
+    transition: background-color 0.2s, transform 0.2s;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--cdi-purple); color: white; }
+  .btn-primary:hover, .btn-primary:focus-visible {
+    background: var(--cdi-purple-dark);
+  }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent; color: var(--cdi-purple);
+    border: 2px solid var(--cdi-purple);
+  }
+  .btn-outline:hover, .btn-outline:focus-visible {
+    background: var(--cdi-purple-light);
+  }
+
+  .lock-btn { width: 100%; justify-content: center; margin-top: 1rem; }
+
+  /* ===== RESULT REVEAL ===== */
+  .result-reveal {
+    display: none; margin-top: 1.25rem; padding: 1.25rem;
+    border-radius: 10px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .result-reveal.show { animation: fadeUp 0.4s ease; }
+  }
+  .result-reveal.show { display: block; }
+  .result-reveal.close { background: var(--green-light); border: 2px solid #A8DAB5; }
+  .result-reveal.far { background: var(--red-light); border: 2px solid #F5B7B1; }
+  .result-reveal.mid { background: var(--yellow-light); border: 2px solid #FFE082; }
+
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .result-label {
+    font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--text-light);
+  }
+  .result-label-actual { color: var(--cdi-purple); }
+  .result-number { font-size: 1.8em; font-weight: 700; }
+  .result-number.actual { color: var(--cdi-purple); }
+
+  .result-diff {
+    text-align: center; font-size: 0.875rem; padding: 0.5rem 1rem;
+    border-radius: 6px; font-weight: 600; margin-top: 0.75rem;
+  }
+  .result-diff.close-diff { background: #C8E6C9; color: var(--green-text); }
+  .result-diff.mid-diff { background: #FFE082; color: var(--yellow-text); }
+  .result-diff.far-diff { background: #FFCDD2; color: var(--red-text); }
+
+  /* ===== GAP BAR ===== */
+  .gap-bar-container { margin: 1rem 0 0.5rem; }
+  .gap-bar {
+    position: relative; height: 12px; background: var(--border);
+    border-radius: 6px; overflow: visible;
+  }
+  .gap-marker {
+    position: absolute; top: -6px; width: 24px; height: 24px;
+    border-radius: 50%; border: 3px solid white;
+    transform: translateX(-50%); transition: left 0.5s ease;
+  }
+  .gap-marker.guess { background: var(--text-light); }
+  .gap-marker.actual { background: var(--cdi-purple); }
+  .gap-legend {
+    display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-light);
+    margin-top: 0.5rem; justify-content: center;
+  }
+  .gap-legend span { display: inline-flex; align-items: center; gap: 0.25rem; }
+  .legend-dot {
+    display: inline-block; width: 10px; height: 10px;
+    border-radius: 50%; flex-shrink: 0;
+  }
+  .legend-dot.guess-dot { background: var(--text-light); }
+  .legend-dot.actual-dot { background: var(--cdi-purple); }
+
+  /* ===== SCORE CARD ===== */
+  .score-card {
+    display: none; background: var(--card-bg); border: 2px solid var(--cdi-purple);
+    border-radius: 14px; padding: 2rem; margin-top: 2rem;
+    box-shadow: 0 4px 20px rgba(81,88,255,0.12);
+  }
+  .score-card.show { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .score-card.show { animation: fadeUp 0.5s ease; }
+  }
+
+  /* ===== PARTY SCORE GRID ===== */
+  .party-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 480px) {
+    .party-scores { grid-template-columns: 1fr; }
+  }
+
+  .party-score-block {
+    border-radius: 12px; padding: 1.25rem 1rem; text-align: center;
+  }
+  .party-score-block.overall {
+    background: var(--cdi-purple-light);
+    border: 2px solid var(--cdi-purple);
+  }
+  .party-score-block.dem {
+    background: var(--dem-blue-light);
+    border: 2px solid var(--dem-blue);
+  }
+  .party-score-block.rep {
+    background: var(--rep-red-light);
+    border: 2px solid var(--rep-red);
+  }
+
+  .party-score-label {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 0.375rem;
+  }
+  .party-score-block.overall .party-score-label { color: var(--cdi-purple-dark); }
+  .party-score-block.dem .party-score-label { color: var(--dem-blue); }
+  .party-score-block.rep .party-score-label { color: var(--rep-red); }
+
+  .party-score-number {
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 3em; font-weight: 700; line-height: 1;
+  }
+  .party-score-block.overall .party-score-number { color: var(--cdi-purple); }
+  .party-score-block.dem .party-score-number { color: var(--dem-blue); }
+  .party-score-block.rep .party-score-number { color: var(--rep-red); }
+
+  .party-score-unit {
+    font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;
+  }
+
+  .score-summary {
+    font-size: 0.9375rem; line-height: 1.7; color: var(--text);
+    margin: 1.25rem 0;
+  }
+  .score-summary p:last-child { margin-bottom: 0; }
+
+  /* ===== CALLOUT ===== */
+  .callout {
+    background: var(--cdi-purple-light); border-left: 4px solid var(--cdi-purple);
+    padding: 1.125rem 1.375rem; border-radius: 0 8px 8px 0; margin: 1.25rem 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .note { font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem; }
+
+  /* ===== ANIMATION ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .screen.active { animation: fadeUp 0.4s ease; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<main id="main-content" class="container">
+  <p class="brand" aria-label="Constructive Dialogue Institute">Constructive Dialogue Institute</p>
+
+  <!-- ===== LIVE REGION FOR ANNOUNCEMENTS ===== -->
+  <div id="liveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ===== INTRO SCREEN ===== -->
+  <section class="screen active" id="introScreen" aria-labelledby="intro-heading">
+    <h1 id="intro-heading">What Do They Really Believe?</h1>
+    <p class="subtitle">Most people are bad at guessing what the other side actually believes. Let's put that to the test.</p>
+
+    <div class="callout" role="note">
+      <p>For each question, <strong>drag the slider to your best estimate</strong> of the real percentage. Then lock in your answer to see how close you were.</p>
+      <p class="note">There are 8 questions — 4 about Democrats, 4 about Republicans. You'll receive an overall Perception Gap score plus separate scores for each party.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="startAssessment()" style="margin-top:1.25rem;"
+            aria-label="Start the 8-question Perception Gap assessment">
+      Start the Assessment
+    </button>
+  </section>
+
+  <!-- ===== ASSESSMENT SCREEN ===== -->
+  <section class="screen" id="assessScreen" aria-labelledby="assess-heading">
+    <h1 id="assess-heading" class="sr-only">Perception Gap Assessment</h1>
+
+    <div class="progress-region">
+      <div class="progress-label">
+        <span id="progressText">Question 1 of 8</span>
+        <span id="gapRunning" aria-live="polite"></span>
+      </div>
+      <div class="progress-track"
+           role="progressbar"
+           aria-valuenow="0"
+           aria-valuemin="0"
+           aria-valuemax="8"
+           aria-label="Assessment progress"
+           id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="questionsContainer" role="list"></div>
+
+    <!-- ===== SCORE CARD ===== -->
+    <section class="score-card" id="scoreCard" aria-labelledby="score-heading" tabindex="-1">
+      <h2 id="score-heading" style="margin-top:0; text-align:center;">Your Perception Gap</h2>
+      <p style="text-align:center; font-size:0.875rem; color:var(--text-light); margin-bottom:0;">Average points off per question</p>
+
+      <!-- Three-way score display -->
+      <div class="party-scores" role="group" aria-label="Perception gap scores by party">
+        <div class="party-score-block dem">
+          <p class="party-score-label">Democrats</p>
+          <p class="party-score-number" id="demScore" aria-live="polite">—</p>
+          <p class="party-score-unit">avg pts off<br><span style="font-size:0.6875rem;">(4 questions)</span></p>
+        </div>
+        <div class="party-score-block overall">
+          <p class="party-score-label">Overall</p>
+          <p class="party-score-number" id="finalScore" aria-live="polite">—</p>
+          <p class="party-score-unit">avg pts off<br><span style="font-size:0.6875rem;">(8 questions)</span></p>
+        </div>
+        <div class="party-score-block rep">
+          <p class="party-score-label">Republicans</p>
+          <p class="party-score-number" id="repScore" aria-live="polite">—</p>
+          <p class="party-score-unit">avg pts off<br><span style="font-size:0.6875rem;">(4 questions)</span></p>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="score-summary" role="note">
+        <p>These numbers reflect the average points off per question for each group. Surprised by the results? You\u2019re not alone. We tend to have a distorted perception of what people across the aisle believe. More in Common calls this tendency the <strong>Perception Gap</strong>\u2014our habit of misjudging and exaggerating what people on the other side actually believe. We often assume their views are much more extreme than they really are.</p>
+      </div>
+
+      <div class="callout" style="margin-top:0.5rem;" role="note">
+        <p><strong>What is the Perception Gap?</strong></p>
+        <p>More in Common calls this our habit of misjudging and exaggerating what people on the other side actually believe. We often assume their views are much more extreme than they really are.</p>
+        <p class="note">This data comes from a 2024 nationally representative survey of 5,005 American adults conducted by More in Common.</p>
+      </div>
+
+      <button class="btn btn-outline" onclick="resetAssessment()" style="margin-top:1.25rem; width:100%; justify-content:center;">
+        Try Again
+      </button>
+    </section>
+  </section>
+</main>
+
+<script>
+const questions = [
+  {
+    party: 'rep', partyLabel: 'Republicans',
+    text: 'What percentage of <strong>Republicans</strong> agree that properly controlled immigration can be <strong>good for America</strong>?',
+    textPlain: 'What percentage of Republicans agree that properly controlled immigration can be good for America?',
+    answer: 88
+  },
+  {
+    party: 'dem', partyLabel: 'Democrats',
+    text: 'What percentage of <strong>Democrats</strong> <em>disagree</em> with the U.S. having <strong>completely open borders</strong>?',
+    textPlain: 'What percentage of Democrats disagree with the U.S. having completely open borders?',
+    answer: 77
+  },
+  {
+    party: 'dem', partyLabel: 'Democrats',
+    text: 'What percentage of <strong>Democrats</strong> agree: \u201CI trust the officials who administer elections in the country\u201D?',
+    textPlain: 'What percentage of Democrats agree: I trust the officials who administer elections in the country?',
+    answer: 59
+  },
+  {
+    party: 'rep', partyLabel: 'Republicans',
+    text: 'What percentage of <strong>Republicans</strong> agree: \u201CI trust the officials who administer elections in the country\u201D?',
+    textPlain: 'What percentage of Republicans agree: I trust the officials who administer elections in the country?',
+    answer: 50
+  },
+  {
+    party: 'dem', partyLabel: 'Democrats',
+    text: 'What percentage of <strong>Democrats</strong> agree: \u201CI\u2019m proud to be an American, though I acknowledge my country\u2019s flaws\u201D?',
+    textPlain: 'What percentage of Democrats agree: I\'m proud to be an American, though I acknowledge my country\'s flaws?',
+    answer: 81
+  },
+  {
+    party: 'rep', partyLabel: 'Republicans',
+    text: 'What percentage of <strong>Republicans</strong> agree: \u201CI\u2019m proud to be an American, though I acknowledge my country\u2019s flaws\u201D?',
+    textPlain: 'What percentage of Republicans agree: I\'m proud to be an American, though I acknowledge my country\'s flaws?',
+    answer: 92
+  },
+  {
+    party: 'dem', partyLabel: 'Democrats',
+    text: 'What percentage of <strong>Democrats</strong> agree: \u201CI want both political parties to work together to solve problems for our country\u201D?',
+    textPlain: 'What percentage of Democrats agree: I want both political parties to work together to solve problems for our country?',
+    answer: 87
+  },
+  {
+    party: 'rep', partyLabel: 'Republicans',
+    text: 'What percentage of <strong>Republicans</strong> agree: \u201CI want both political parties to work together to solve problems for our country\u201D?',
+    textPlain: 'What percentage of Republicans agree: I want both political parties to work together to solve problems for our country?',
+    answer: 83
+  }
+];
+
+let answered = 0;
+let totalGap = 0;
+let gaps = [];
+// Track per-party gaps: store { gap, party } for each answered question
+let partyGaps = [];
+
+function announce(msg) {
+  const el = document.getElementById('liveAnnouncer');
+  el.textContent = '';
+  setTimeout(() => { el.textContent = msg; }, 100);
+}
+
+function startAssessment() {
+  document.getElementById('introScreen').classList.remove('active');
+  const assess = document.getElementById('assessScreen');
+  assess.classList.add('active');
+  renderQuestions();
+  announce('Assessment started. Question 1 of 8.');
+  setTimeout(() => {
+    const first = document.getElementById('q0');
+    if (first) first.focus();
+  }, 300);
+}
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+
+  questions.forEach((q, i) => {
+    const card = document.createElement('article');
+    card.className = 'question-card';
+    card.id = `q${i}`;
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-labelledby', `qLabel${i}`);
+    card.setAttribute('tabindex', '-1');
+    if (i > 0) card.style.display = 'none';
+
+    const sliderId = `slider${i}`;
+    const outputId = `val${i}`;
+
+    card.innerHTML = `
+      <span class="party-badge ${q.party}" aria-hidden="true">${q.partyLabel}</span>
+      <p class="question-text" id="qLabel${i}">${q.text}</p>
+
+      <fieldset class="slider-group" style="border:none; padding:0; margin:0;">
+        <legend class="sr-only">${q.textPlain} Estimate a percentage from 0 to 100.</legend>
+
+        <output for="${sliderId}" class="slider-output" id="${outputId}"
+                aria-live="polite" aria-atomic="true">50%</output>
+
+        <div class="slider-labels" aria-hidden="true">
+          <span>0%</span><span>50%</span><span>100%</span>
+        </div>
+
+        <input type="range" min="0" max="100" value="50" step="1"
+               id="${sliderId}"
+               aria-label="Your estimate for: ${q.textPlain}"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"
+               aria-valuetext="50 percent"
+               oninput="updateSlider(${i}, this.value)">
+      </fieldset>
+
+      <button class="btn btn-primary lock-btn" id="lockBtn${i}"
+              onclick="lockAnswer(${i})"
+              aria-label="Lock in your estimate for question ${i + 1}">
+        Lock In My Estimate
+      </button>
+
+      <div class="result-reveal" id="result${i}"
+           role="region" aria-labelledby="resultHeading${i}" aria-live="polite">
+        <h3 id="resultHeading${i}" class="sr-only">Result for question ${i + 1}</h3>
+        <div class="result-row">
+          <div>
+            <p class="result-label">Your guess</p>
+            <p class="result-number" id="guessShow${i}">\u2014</p>
+          </div>
+          <div style="text-align:right;">
+            <p class="result-label result-label-actual">Actual</p>
+            <p class="result-number actual">${q.answer}%</p>
+          </div>
+        </div>
+
+        <div class="gap-bar-container" aria-hidden="true">
+          <div class="gap-bar">
+            <div class="gap-marker guess" id="gMarkerGuess${i}" style="left:50%"></div>
+            <div class="gap-marker actual" id="gMarkerActual${i}" style="left:${q.answer}%"></div>
+          </div>
+          <div class="gap-legend">
+            <span><span class="legend-dot guess-dot"></span> Your guess</span>
+            <span><span class="legend-dot actual-dot"></span> Actual answer</span>
+          </div>
+        </div>
+
+        <p class="result-diff" id="diff${i}" role="status"></p>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateSlider(i, value) {
+  const output = document.getElementById(`val${i}`);
+  const slider = document.getElementById(`slider${i}`);
+  output.textContent = value + '%';
+  slider.setAttribute('aria-valuenow', value);
+  slider.setAttribute('aria-valuetext', value + ' percent');
+}
+
+function lockAnswer(i) {
+  const slider = document.getElementById(`slider${i}`);
+  const guess = parseInt(slider.value);
+  const actual = questions[i].answer;
+  const diff = Math.abs(guess - actual);
+
+  slider.disabled = true;
+  const lockBtn = document.getElementById(`lockBtn${i}`);
+  lockBtn.style.display = 'none';
+  lockBtn.setAttribute('aria-hidden', 'true');
+
+  document.getElementById(`guessShow${i}`).textContent = guess + '%';
+  document.getElementById(`gMarkerGuess${i}`).style.left = guess + '%';
+
+  const resultEl = document.getElementById(`result${i}`);
+  const diffEl = document.getElementById(`diff${i}`);
+
+  let cls, diffCls, msg;
+  if (diff <= 5) {
+    cls = 'close'; diffCls = 'close-diff';
+    msg = `Spot on! Only ${diff} point${diff !== 1 ? 's' : ''} off.`;
+  } else if (diff <= 15) {
+    cls = 'mid'; diffCls = 'mid-diff';
+    msg = `Close \u2014 you were ${diff} points off.`;
+  } else {
+    cls = 'far'; diffCls = 'far-diff';
+    msg = `${diff} points off. ${guess < actual ? 'The real number is higher than you thought.' : 'The real number is lower than you thought.'}`;
+  }
+
+  resultEl.classList.add(cls, 'show');
+  diffEl.textContent = msg;
+  diffEl.className = `result-diff ${diffCls}`;
+
+  // Track overall and per-party
+  answered++;
+  totalGap += diff;
+  gaps.push(diff);
+  partyGaps.push({ party: questions[i].party, gap: diff });
+
+  // Update progress
+  const pct = (answered / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  const progressBar = document.getElementById('progressBar');
+  progressBar.setAttribute('aria-valuenow', answered);
+
+  const progressLabel = answered < questions.length
+    ? `Question ${answered + 1} of ${questions.length}`
+    : `All ${questions.length} questions answered`;
+  document.getElementById('progressText').textContent = progressLabel;
+
+  const avgGap = (totalGap / answered).toFixed(1);
+  document.getElementById('gapRunning').textContent = `Avg gap: ${avgGap} pts`;
+
+  announce(`Your guess: ${guess}%. Actual answer: ${actual}%. ${msg}`);
+
+  if (answered < questions.length) {
+    setTimeout(() => {
+      const next = document.getElementById(`q${answered}`);
+      next.style.display = 'block';
+      next.focus();
+      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      announce(progressLabel);
+    }, 1200);
+  } else {
+    setTimeout(showFinalScore, 1400);
+  }
+}
+
+function getInterpretation(avg, party) {
+  // Thresholds calibrated to More in Common's media-consumption data:
+  // ~8 pts = "hardly any news"; ~10 pts = "only now and then"; ~18 pts = "some of the time"; 28+ = "most of the time"
+  const partyName = party === 'dem' ? 'Democrats' : party === 'rep' ? 'Republicans' : null;
+  const side = party === 'dem' ? 'Democrats' : party === 'rep' ? 'Republicans' : 'both parties';
+  const opposite = party === 'dem' ? 'Republicans' : party === 'rep' ? 'Democrats' : null;
+
+  if (party === 'overall') {
+    if (avg <= 10) {
+      return `<strong>Low gap.</strong> Your sense of what each party actually believes is unusually accurate. You\u2019re less susceptible to the distortions of echo chambers and media amplification than most people \u2014 though it\u2019s always worth staying curious about where your blind spots might be.`;
+    } else if (avg <= 18) {
+      return `<strong>Moderate gap.</strong> Like most Americans, your picture of what each party believes is somewhat off. You got some right and misjudged others. This is normal \u2014 our media environment and social circles quietly filter what we hear. The good news: awareness of the gap is the first step toward closing it.`;
+    } else {
+      return `<strong>Large gap.</strong> Your estimates were pretty far from reality on several questions \u2014 and you\u2019re in good company. Most people substantially misjudge what the other side believes. This doesn\u2019t reflect your intelligence; it reflects how echo chambers and amplified extremes distort our picture of fellow Americans.`;
+    }
+  }
+
+  if (avg <= 10) {
+    return `<strong>Low gap.</strong> You have a fairly accurate read on what ${partyName} actually believe. Your picture of ${partyName} is less distorted than most people\u2019s \u2014 a sign you\u2019re not relying solely on the loudest or most extreme voices to form your impressions.`;
+  } else if (avg <= 18) {
+    return `<strong>Moderate gap.</strong> Your estimates of what ${partyName} believe were somewhat off. This is typical \u2014 we tend to hear the most polarizing ${partyName} voices most often, which skews our sense of where the party as a whole actually stands.`;
+  } else {
+    return `<strong>Large gap.</strong> Your estimates of what ${partyName} believe were quite far from reality. The views of everyday ${partyName} are likely more nuanced than the version you\u2019ve been exposed to \u2014 a common effect of how media and social feeds filter what we see.`;
+  }
+}
+
+function showFinalScore() {
+  const overall = totalGap / questions.length;
+
+  const demItems = partyGaps.filter(g => g.party === 'dem');
+  const repItems = partyGaps.filter(g => g.party === 'rep');
+  const demAvg = demItems.reduce((s, g) => s + g.gap, 0) / demItems.length;
+  const repAvg = repItems.reduce((s, g) => s + g.gap, 0) / repItems.length;
+
+  document.getElementById('finalScore').textContent = overall.toFixed(1);
+  document.getElementById('demScore').textContent = demAvg.toFixed(1);
+  document.getElementById('repScore').textContent = repAvg.toFixed(1);
+
+  // Build interpretation blocks
+  const container = document.getElementById('scoreInterpretations');
+  const configs = [
+    { key: 'dem',     avg: demAvg,  label: 'Democrats',   tagClass: 'dem'     },
+    { key: 'rep',     avg: repAvg,  label: 'Republicans', tagClass: 'rep'     },
+    { key: 'overall', avg: overall, label: 'Overall',     tagClass: 'overall' },
+  ];
+
+  container.innerHTML = configs.map(c => `
+    <div class="score-interp-block ${c.key}" role="note"
+         aria-label="${c.label} perception gap interpretation">
+      <span class="interp-party-tag ${c.tagClass}" aria-hidden="true">${c.label}</span>
+      <p>${getInterpretation(c.avg, c.key)}</p>
+    </div>
+  `).join('');
+
+  const scoreCard = document.getElementById('scoreCard');
+  scoreCard.classList.add('show');
+  scoreCard.focus();
+  scoreCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  announce(`Assessment complete. Democrat gap: ${demAvg.toFixed(1)} points. Republican gap: ${repAvg.toFixed(1)} points. Overall gap: ${overall.toFixed(1)} points per question.`);
+}
+
+function resetAssessment() {
+  answered = 0;
+  totalGap = 0;
+  gaps = [];
+  partyGaps = [];
+  document.getElementById('scoreCard').classList.remove('show');
+  document.getElementById('scoreInterpretations').innerHTML = '';
+  document.getElementById('finalScore').textContent = '—';
+  document.getElementById('demScore').textContent = '—';
+  document.getElementById('repScore').textContent = '—';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressBar').setAttribute('aria-valuenow', '0');
+  document.getElementById('progressText').textContent = 'Question 1 of 8';
+  document.getElementById('gapRunning').textContent = '';
+  renderQuestions();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  announce('Assessment reset. Question 1 of 8.');
+  setTimeout(() => {
+    const first = document.getElementById('q0');
+    if (first) first.focus();
+  }, 300);
+}
+</script>
+</body>
+</html>
